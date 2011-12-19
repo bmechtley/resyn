@@ -15,12 +15,12 @@ def specs(textures, crop = True):
 		subplot(len(textures), 1, i)
 		samples = textures[i].samples[0:minduration * textures[i].fs] if crop else textures[i].samples
 		specgram(samples, Fs = textures[i].fs)
+		xlim(0, len(samples) / textures[i].fs)
+		ylim(0, textures[i].fs / 2)
 		title(textures[i].file.split('/')[-1])
 		if i is 0: xlabel('Time (s)')
 		else: xticks([])
 		ylabel('Frequency (Hz)')
-		
-	show()
 
 def scalogram(tree, scaling = True, levels = None):	
 	"""

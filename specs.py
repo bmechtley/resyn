@@ -10,3 +10,5 @@ parser.add_argument('-c', dest='crop', action='store_true',
 args = parser.parse_args()
 
 specs([Texture(f) for f in args.sound], args.crop)
+
+show()

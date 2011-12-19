@@ -2,6 +2,12 @@ from pylab import *
 from scipy.stats import scoreatpercentile
 from random import choice
 import pywt
+import time
+
+def identify_transients(input, p = 0.8):
+	d = difference(sqrt(hilbert(input) ** 2 + input ** 2))
+	threshold = scoreatpercentile(d, 0.8)
+	return d > scoreatpercentile
 
 class MRANode:
 	"""
@@ -72,9 +78,11 @@ class MRATree:
 		self.nodes = []
 		self.wavelet = wavelet
 		self.mode = mode
+		t1 = time.time()
 		self.dwt = pywt.wavedec(input, wavelet, mode = mode, level = int(log2(len(input))) + 1)
+		print 'wavelet decomposition in', time.time() - t1, 'seconds.'
 		parents = [None]
-		
+		t1 = time.time()
 		for i in range(0, len(self.dwt)):
 			nodes = []
 			
@@ -88,7 +96,8 @@ class MRATree:
 			parents = nodes
 			self.nodes.extend(nodes)
 			if i is 0: self.root = nodes[0]
-	
+		print 'tree construction in', time.time() - t1, 'seconds.'
+		
 	def reconstruct(self, node = None, level = 0, index = 0):
 		"""
 		Return a reconstructed one-dimensional signal from the MRA tree.
@@ -149,8 +158,8 @@ class MRATree:
 		cpredecessors = array([p.value for p in c.predecessors(nk)])
 		pscores =  abs(npredecessors - cpredecessors)
 		return sum(cumsum(pscores) < threshold)
-		
-	def tap(self, p = 0.8, k = 0.2, maxlevel = -1):
+	
+	def tap(self, p = 0.8, k = 0.01, maxlevel = -1):
 		"""
 		Rearrange tree using wavelet tree learning as per TAPESTREA.
 		
@@ -164,8 +173,9 @@ class MRATree:
 			regardless.
 		"""
 		
-		threshold = scoreatpercentile([abs(n.value) for n in self.nodes], p) / 2.0
+		t1 = time.time()
 		
+		threshold = scoreatpercentile([abs(n.value) for n in self.nodes], p * 100) * 2.0
 		parents = array([])
 		children = array([self.root])
 		
@@ -199,3 +209,5 @@ class MRATree:
 			
 			parents = nodes
 			children = array([c for c in array([n.children for n in nodes]).flat if c != None])
+			
+		print 'tapped in', (time.time() - t1), 'seconds or less.'
