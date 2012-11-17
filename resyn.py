@@ -17,20 +17,21 @@ class TexturePlot():
 		self.t.samples = self.t.samples[0:2 ** self.t.max_levels()]
 		self.p = 1.0 - (40.0 / len(self.t.samples))
 		self.lines = []
+		self.marks = []
 		
-		self.calculateTransients(self.p)
+		#self.calculateTransients(self.p)
 		
 		spacing = 0.05
 		bottom = len(widgets) * spacing + 3 * spacing
 		height = (1.0 - bottom) / n - spacing / 4
 		
-		
 		self.box = [
-			0.2, 
+			0.1, 
 			bottom + (i * spacing) + height * i,
-			0.6, 
+			0.7, 
 			height - spacing * n
 		]
+		
 		self.spec = axes(self.box)
 		self.overlay = axes(self.box, frameon = False)
 		self.overlay.set_xticklabels([])
@@ -57,7 +58,6 @@ class TexturePlot():
 		self.replot()
 	
 	def calculateTransients(self, alpha = 0.9999, beta = 0.0001):
-		print '\ttransients'
 		d = self.t.samples.copy()
 			
 		for i in range(1, len(d)):
@@ -69,7 +69,6 @@ class TexturePlot():
 		d = diff(d)
 		threshold = scoreatpercentile(d, self.p * 100)
 		self.marks = (array(d) > threshold).nonzero()[0]
-		print '\tdone'
 		
 	def replot(self):
 		sca(self.spec)
@@ -93,30 +92,22 @@ class TexturePlot():
 		stream.close()
 	
 	def tap(self, e):
-		print 'tapping'
 		self.t.tap(self.widgets['p'].val, self.widgets['k'].val, self.widgets['l'].val)
-		self.calculateTransients(self.p)
-		print 'done'
+		#self.calculateTransients(self.p)
 		self.replot()
 	
 	def shake(self, e):
-		print 'shaking'
 		self.t.shake(self.widgets['l'].val)
-		self.calculateTransients(self.p)
-		print 'done'
+		#self.calculateTransients(self.p)
 		self.replot()
 	
 	def save(self, e):
-		print 'saving'
 		self.t.save(self.filename.split('.')[0] + '-itap.wav')
-		print 'done'
 		
 	def reset(self, e):
-		print 'resetting'
 		self.t = Texture(self.filename)
 		self.t.samples = self.t.samples[0:2 ** self.t.max_levels()]
-		self.calculateTransients(self.p)
-		print 'done'
+		#self.calculateTransients(self.p)
 		self.replot()
 	
 class TextureControls:

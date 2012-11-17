@@ -80,7 +80,7 @@ class MRATree:
 		self.mode = mode
 		t1 = time.time()
 		self.dwt = pywt.wavedec(input, wavelet, mode = mode, level = int(log2(len(input))) + 1)
-		print 'wavelet decomposition in', time.time() - t1, 'seconds.'
+		print 'wavelet decomposition in', '%.2f' % (time.time() - t1), 'seconds.'
 		parents = [None]
 		t1 = time.time()
 		for i in range(0, len(self.dwt)):
@@ -96,7 +96,7 @@ class MRATree:
 			parents = nodes
 			self.nodes.extend(nodes)
 			if i is 0: self.root = nodes[0]
-		print 'tree construction in', time.time() - t1, 'seconds.'
+		print 'tree construction in', '%.2f' % (time.time() - t1), 'seconds.'
 		
 	def reconstruct(self, node = None, level = 0, index = 0):
 		"""

@@ -19,11 +19,6 @@ class STFT:
 			pad_to = self.npad
 		)
 		
-		print 'fs', self.fs
-		print 'nfft', self.nfft
-		print 'nhop', self.nhop
-		print 'npad', self.npad
-		
 		# Spectral centroid initialization.
 		self.bark_units = map(lambda i: hz_to_bark((self.fs * i) / (2 * (self.nfft - 1))), range(0, self.npad / 2))
 		self.bark_weights = diff(self.bark_units)
